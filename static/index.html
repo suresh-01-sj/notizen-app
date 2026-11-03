@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Notizen — Meeting Scheduler & Reminders</title>
+    <meta name="description"
+        content="Schedule meetings and receive exact alarm-style reminders before they start.">
+    <meta name="author" content="Suresh Jourat">
+    <meta name="creator" content="Suresh Jourat">
+    <!-- PWA & Mobile Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#070B18">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Notizen">
+    <link rel="apple-touch-icon" href="images/notizen_logo.webp">
+    <link rel="icon" type="image/webp" href="images/notizen_logo.webp">
+
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=5.8">
+</head>
+
+<body class="dark-theme">
+    <div class="app-layout">
+
+        <!-- Top Header & Live Status Card -->
+        <header class="app-header">
+            <div class="header-brand">
+                <img src="images/notizen_logo.webp" alt="Notizen Logo" class="brand-logo-img">
+                <div class="brand-text">
+                    <h1 class="brand-title">Notizen</h1>
+                    <p class="brand-subtitle">Meeting Scheduler</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="live-clock" id="liveClock">--:--:--</div>
+
+                <!-- Settings Dropdown Container (Commented Out)
+                <div class="settings-dropdown-wrapper">
+                    <button id="settingsBtn" class="btn-icon settings-btn" title="Settings & Preferences"
+                        aria-label="Settings" aria-expanded="false">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                    </button>
+
+                    <div class="settings-menu" id="settingsMenu" style="display: none;">
+                        <div class="settings-menu-header">
+                            <span class="settings-menu-title">Preferences</span>
+                        </div>
+
+                        <div class="settings-item">
+                            <div class="settings-item-label">
+                                <span class="settings-icon">🎨</span>
+                                <div>
+                                    <div class="settings-label-title">Theme</div>
+                                    <div class="settings-label-desc">Display theme</div>
+                                </div>
+                            </div>
+                            <div class="settings-control">
+                                <select id="themeSelect" class="settings-select">
+                                    <option value="dark">🌙 Dark</option>
+                                    <option value="light">☀️ Light</option>
+                                    <option value="midnight">🌌 Midnight</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="settings-item">
+                            <div class="settings-item-label">
+                                <span class="settings-icon">🔔</span>
+                                <div>
+                                    <div class="settings-label-title">Notifications</div>
+                                    <div class="settings-label-desc" id="notifStatusDesc">Alerts & alarms</div>
+                                </div>
+                            </div>
+                            <div class="settings-control">
+                                <select id="notificationSelect" class="settings-select">
+                                    <option value="on">On</option>
+                                    <option value="off">Off</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                -->
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- Dashboard Stats & Controls -->
+            <section class="dashboard-controls">
+                <div class="stats-ribbon">
+                    <div class="stat-card" data-filter="upcoming">
+                        <div class="stat-number" id="countUpcoming">0</div>
+                        <div class="stat-label">Upcoming</div>
+                    </div>
+                    <div class="stat-card" data-filter="today">
+                        <div class="stat-number" id="countToday">0</div>
+                        <div class="stat-label">Today</div>
+                    </div>
+                    <div class="stat-card" data-filter="completed">
+                        <div class="stat-number" id="countCompleted">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+
+                <div class="filter-search-row">
+                    <!-- Navigation Tabs -->
+                    <nav class="nav-tabs">
+                        <button class="tab-btn active" data-tab="upcoming">Upcoming</button>
+                        <button class="tab-btn" data-tab="today">Today</button>
+                        <button class="tab-btn" data-tab="completed">Completed</button>
+                        <button class="tab-btn" data-tab="all">All</button>
+                    </nav>
+
+                    <!-- Search Input -->
+                    <div class="search-box">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Search meetings, persons, categories...">
+                        <button id="clearSearchBtn" class="clear-btn" style="display: none;">&times;</button>
+                    </div>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="category-pills">
+                    <span class="category-label">Category:</span>
+                    <button class="pill active" data-category="ALL">All</button>
+                    <button class="pill" data-category="General">General</button>
+                    <button class="pill" data-category="Work">Work</button>
+                    <button class="pill" data-category="Personal">Personal</button>
+                    <button class="pill" data-category="Client">Client</button>
+                    <button class="pill" data-category="Standup">Standup</button>
+                </div>
+            </section>
+
+            <!-- Meetings List Section -->
+            <section class="meetings-container">
+                <div id="loadingSpinner" class="spinner-wrapper" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Loading schedule...</p>
+                </div>
+
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <h3 class="empty-title" id="emptyTitle">No Upcoming Meetings</h3>
+                    <p class="empty-desc" id="emptyDesc">Speak and type on + button to schedule a meeting.</p>
+                </div>
+
+                <div id="meetingsList" class="meetings-grid">
+                    <!-- Meeting cards rendered dynamically -->
+                </div>
+            </section>
+        </main>
+
+        <!-- App Footer (Creator Branding) -->
+        <footer class="app-footer">
+            <p class="footer-creator">Crafted by <strong class="creator-name">Suresh Jourat</strong></p>
+        </footer>
+
+        <!-- Floating Action Button (FAB) at bottom-right (Google Notes style) -->
+        <button id="openNewMeetingBtn" class="mobile-fab" title="New Meeting" aria-label="Add meeting">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Add / Edit Meeting Modal -->
+    <div class="modal-overlay" id="meetingModal" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Schedule Meeting</h2>
+                <button class="modal-close-btn" id="closeModalBtn" aria-label="Close">&times;</button>
+            </div>
+            <form id="meetingForm" class="modal-form">
+                <input type="hidden" id="formMeetingId" value="">
+
+                <!-- Voice QA Assistant Section (Commented Out)
+                <div class="form-group modal-smart-fill voice-assistant-group" id="modalSmartFillGroup">
+                    <div class="voice-assistant-bar">
+                        <div class="voice-assistant-meta">
+                            <span class="voice-sparkle">✨</span>
+                            <div class="voice-assistant-text-col">
+                                <span class="voice-assistant-heading">Voice Scheduling Assistant</span>
+                                <span class="voice-assistant-subheading" id="voiceAssistantStatus">Tap the mic to schedule by voice</span>
+                            </div>
+                        </div>
+                        <button type="button" id="modalVoiceBtn" class="voice-assistant-mic-btn" title="Start voice scheduling assistant" aria-label="Start voice assistant">
+                            <span class="mic-pulse-wave"></span>
+                            <svg class="mic-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="22"></line>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="voice-qa-chatbox" id="voiceQaContainer" style="display: none;">
+                        <div class="voice-chat-bubble bot-bubble">
+                            <span class="chat-avatar">🤖</span>
+                            <div class="chat-message-content">
+                                <div class="chat-sender-name">Assistant</div>
+                                <div class="chat-text" id="voiceBotMessage">What is the meeting title, date, and person?</div>
+                            </div>
+                        </div>
+
+                        <div class="voice-chat-bubble user-bubble" id="voiceUserBubble" style="display: none;">
+                            <div class="chat-message-content">
+                                <div class="chat-sender-name">You</div>
+                                <div class="chat-text" id="voiceUserMessage">...</div>
+                            </div>
+                            <span class="chat-avatar user-avatar">🗣️</span>
+                        </div>
+
+                        <div class="voice-listening-indicator" id="voiceListeningWave" style="display: none;">
+                            <span class="wave-dot"></span>
+                            <span class="wave-dot"></span>
+                            <span class="wave-dot"></span>
+                            <span class="wave-dot"></span>
+                            <span class="listening-text">Listening... Speak now</span>
+                        </div>
+
+                        <div class="voice-qa-actions">
+                            <button type="button" class="btn-voice-stop" id="voiceStopBtn">Stop Voice Assistant</button>
+                        </div>
+                    </div>
+                </div>
+                -->
+
+                <div class="form-group">
+                    <label for="formTitle">Meeting Title *</label>
+                    <input type="text" id="formTitle" required placeholder="e.g. Lunch, Sprint Planning, Client Sync">
+                </div>
+
+                <div class="form-group">
+                    <label for="formPerson">With Person (Optional)</label>
+                    <input type="text" id="formPerson" placeholder="e.g. Rahul Sharma, Dr. Priya">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group custom-date-group">
+                        <label for="formDateDisplay">Date * <span class="date-format-hint">(DD/MM/YYYY)</span></label>
+                        <div class="date-input-wrapper">
+                            <input type="text" id="formDateDisplay" class="date-display-input" placeholder="DD/MM/YYYY" maxlength="10" autocomplete="off" required>
+                            <input type="date" id="formDate" class="native-date-hidden" tabindex="-1" aria-hidden="true">
+                            <button type="button" class="date-picker-btn" id="openDatePickerBtn" aria-label="Open date picker" tabindex="-1">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="formTime">Time *</label>
+                        <input type="time" id="formTime" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="formReminder">Alarm Offset</label>
+                        <select id="formReminder">
+                            <option value="0">At time of meeting</option>
+                            <option value="5">5 minutes before</option>
+                            <option value="15">15 minutes before</option>
+                            <option value="30" selected>30 minutes before (Default)</option>
+                            <option value="60">1 hour before</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="formCategory">Category</label>
+                        <select id="formCategory">
+                            <option value="General">General</option>
+                            <option value="Work">Work</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Client">Client</option>
+                            <option value="Standup">Standup</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="formAlarmAudio">Alarm Sound</label>
+                    <select id="formAlarmAudio">
+                        <option value="Default alarm sound">Default alarm sound</option>
+                        <option value="After The Rain">After The Rain</option>
+                        <option value="Alarm">Alarm</option>
+                        <option value="Beep">Beep</option>
+                        <option value="Bell">Bell</option>
+                        <option value="Busy Marimba">Busy Marimba</option>
+                        <option value="Cuckoo Clock">Cuckoo Clock</option>
+                        <option value="Ding">Ding</option>
+                        <option value="Dreamer's Alarm">Dreamer's Alarm</option>
+                        <option value="Drift">Drift</option>
+                        <option value="Floating">Floating</option>
+                        <option value="Guitar">Guitar</option>
+                        <option value="Harp Echo">Harp Echo</option>
+                        <option value="Interesting">Interesting</option>
+                        <option value="Kalimbells">Kalimbells</option>
+                        <option value="Modulator">Modulator</option>
+                        <option value="Pulse Signal">Pulse Signal</option>
+                        <option value="Rainy Day">Rainy Day</option>
+                        <option value="Slowly Wind">Slowly Wind</option>
+                        <option value="Sunrise">Sunrise</option>
+                        <option value="Synth Arpeggio">Synth Arpeggio</option>
+                        <option value="Thad Wetland">Thad Wetland</option>
+                        <option value="Waltz Alarm">Waltz Alarm</option>
+                        <option value="Waltz Piano">Waltz Piano</option>
+                        <option value="Warm Night">Warm Night</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="formNotes">Notes (Optional)</label>
+                    <textarea id="formNotes" rows="2"
+                        placeholder="Meeting agenda, location, zoom link, or details..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveMeetingBtn">Save & Schedule Alarm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Full-Screen High-Priority Alarm Alert Modal -->
+    <div class="alarm-fullscreen-overlay" id="alarmOverlay" style="display: none;">
+        <div class="alarm-modal-card">
+            <div class="alarm-pulsing-rings">
+                <div class="ring ring-1"></div>
+                <div class="ring ring-2"></div>
+                <div class="ring ring-3"></div>
+                <div class="alarm-bell-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="alarm-status-pill">MEETING REMINDER</div>
+            <h2 class="alarm-meeting-title" id="alarmTitle">Meeting Reminder</h2>
+            <div class="alarm-person-badge" id="alarmPersonBadge">
+                <span class="avatar-icon">👤</span>
+                <span id="alarmPersonName">With Rahul</span>
+            </div>
+
+            <div class="alarm-time-details" id="alarmTimeDetails">
+                Today at 1:00 PM (starts in 30 minutes)
+            </div>
+
+            <!-- Alarm Tone Indicator -->
+            <div class="alarm-tone-pill" id="alarmTonePill">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+                <span id="alarmToneName">Default alarm sound</span>
+            </div>
+
+            <!-- Auto-stop countdown timer (60s) -->
+            <div class="alarm-countdown-wrapper">
+                <div class="alarm-countdown-track">
+                    <div class="alarm-countdown-bar" id="alarmCountdownBar"></div>
+                </div>
+                <span class="countdown-text" id="alarmCountdownText">Auto-stops in 60s</span>
+            </div>
+
+            <div class="alarm-action-buttons"
+                style="display: flex !important; flex-direction: column !important; width: 100% !important; gap: 10px !important; box-sizing: border-box !important;">
+                <button id="alarmDismissBtn" class="btn btn-alarm-dismiss"
+                    style="width: 100% !important; box-sizing: border-box !important; display: flex !important; align-items: center !important; justify-content: center !important;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    <span>Dismiss Alarm</span>
+                </button>
+                <button id="alarmSnoozeBtn" class="btn btn-alarm-snooze"
+                    style="width: 100% !important; box-sizing: border-box !important; display: flex !important; align-items: center !important; justify-content: center !important;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>Snooze 5 Min</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="js/app.js?v=5.8"></script>
+</body>
+
+</html>
