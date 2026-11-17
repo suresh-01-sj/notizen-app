@@ -1,7 +1,19 @@
 import os
 import time
 from datetime import datetime
+from pathlib import Path
 from typing import List, Optional
+
+def _load_env_fallback():
+    env_path = Path(__file__).resolve().parent.parent / '.env'
+    if env_path.exists():
+        for line in env_path.read_text(encoding='utf-8').splitlines():
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                k, v = line.split('=', 1)
+                os.environ.setdefault(k.strip(), v.strip())
+
+_load_env_fallback()
 from pymongo import MongoClient, ReturnDocument
 from data.models import Meeting
 
