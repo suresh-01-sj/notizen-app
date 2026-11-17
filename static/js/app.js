@@ -1153,7 +1153,12 @@ class NotizenApp {
             if (res.ok) {
                 const data = await res.json();
                 this.meetings = data.meetings || [];
-                saveLocalMeetings(this.meetings);
+                const local = getLocalMeetings();
+                const map = new Map(local.map(m => [String(m.id), m]));
+                for (const m of this.meetings) {
+                    map.set(String(m.id), m);
+                }
+                saveLocalMeetings(Array.from(map.values()));
                 loaded = true;
             }
         } catch (err) {
@@ -1356,26 +1361,61 @@ class NotizenApp {
     async toggleCompleteMeeting(meeting) {
         const nextState = !meeting.isCompleted;
         meeting.isCompleted = nextState;
-        try {
-            await this.apiFetch(`/api/meetings/${meeting.id}/complete?completed=${nextState}`, { method: 'POST' });
-        } catch (e) {}
+
+        // 1. Instant optimistic UI update on card
+        const card = document.querySelector(`.meeting-card[data-id="${meeting.id}"]`);
+        if (card) {
+            if (nextState) {
+                card.classList.add('completed');
+                const chk = card.querySelector('.complete-checkbox-btn');
+                if (chk) chk.title = 'Mark Incomplete';
+            } else {
+                card.classList.remove('completed');
+                const chk = card.querySelector('.complete-checkbox-btn');
+                if (chk) chk.title = 'Mark Completed';
+            }
+        }
+
+        // 2. Instant local memory and storage update
         const local = getLocalMeetings();
         const target = local.find(m => String(m.id) === String(meeting.id));
         if (target) target.isCompleted = nextState;
         saveLocalMeetings(local);
+
+        this.updateStats();
         this.showToast(nextState ? `Completed "${meeting.title}"` : `Marked "${meeting.title}" active`, 'success');
-        await this.loadMeetings(false);
+
+        // 3. Background server sync (no lag)
+        try {
+            await this.apiFetch(`/api/meetings/${meeting.id}/complete?completed=${nextState}`, { method: 'POST' });
+        } catch (e) {}
     }
 
     async deleteMeeting(meetingId) {
         if (!confirm('Are you sure you want to delete this meeting?')) return;
-        try {
-            await this.apiFetch(`/api/meetings/${meetingId}`, { method: 'DELETE' });
-        } catch (e) {}
+
+        // 1. Instant optimistic UI removal with smooth animation (0ms lag)
+        const card = document.querySelector(`.meeting-card[data-id="${meetingId}"]`);
+        if (card) {
+            card.style.transition = 'all 0.2s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.95)';
+            setTimeout(() => card.remove(), 200);
+        }
+        this.meetings = this.meetings.filter(m => String(m.id) !== String(meetingId));
+
+        // 2. Instant local storage & stats update
         const local = getLocalMeetings().filter(m => String(m.id) !== String(meetingId));
         saveLocalMeetings(local);
+        this.updateStats();
         this.showToast('Meeting deleted', 'info');
-        await this.loadMeetings(false);
+
+        // 3. Background server sync
+        try {
+            await this.apiFetch(`/api/meetings/${meetingId}`, { method: 'DELETE' });
+        } catch (e) {
+            console.warn('Delete sync offline:', e);
+        }
     }
 
     async triggerTestAlarm(meetingId) {

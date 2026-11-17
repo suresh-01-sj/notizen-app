@@ -1,5 +1,5 @@
 // Service Worker for Notizen PWA
-const CACHE_NAME = 'notizen-v5.8';
+const CACHE_NAME = 'notizen-v5.9';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',

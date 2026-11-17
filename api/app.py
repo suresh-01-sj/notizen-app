@@ -276,6 +276,15 @@ def serve_service_worker():
     )
 
 
+
+
+@app.get("/.well-known/assetlinks.json")
+def serve_assetlinks():
+    path = STATIC_DIR / ".well-known" / "assetlinks.json"
+    if path.exists():
+        return FileResponse(path, media_type="application/json")
+    raise HTTPException(status_code=404, detail="assetlinks.json not found")
+
 @app.get("/")
 def serve_index():
     return FileResponse(STATIC_DIR / "index.html")
